@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Logo from './Logo';
 
 const MAX_RETRIES = 3;
 
@@ -46,9 +47,30 @@ export default function Player({ src, onExhausted }) {
 
       cleanup();
 
-      const isHls = /\.m3u8($|\?)/i.test(src);
+      /*
+       * Real IPTV links very often carry NO ".m3u8" extension
+       * at all (e.g. server.com/live/user/pass/12345) even
+       * though the content IS an HLS stream - checking the URL
+       * suffix alone silently sent most of those straight to
+       * native <video src=...>, which can't play a manifest it
+       * doesn't recognize. Flipped the logic: assume HLS unless
+       * the URL clearly points at a format the browser already
+       * plays natively (mp4/webm/etc), and let hls.js's own
+       * manifest parsing be the real judge - it fails cleanly
+       * (triggering the existing retry/failover) instead of
+       * silently doing nothing.
+       */
 
-      if (isHls && !video.canPlayType('application/vnd.apple.mpegurl')) {
+      const KNOWN_NATIVE_RE =
+        /\.(mp4|webm|ogg|mov|m4v)($|\?)/i;
+
+      const looksHls =
+        !KNOWN_NATIVE_RE.test(src);
+
+      const nativeHlsSupport =
+        video.canPlayType('application/vnd.apple.mpegurl');
+
+      if (looksHls && !nativeHlsSupport) {
 
         const Hls = (await import('hls.js')).default;
 
@@ -179,6 +201,17 @@ export default function Player({ src, onExhausted }) {
         autoPlay
         muted={false}
       />
+
+      {/*
+       * NexLive watermark - small, semi-transparent, corner
+       * placement so it never blocks native video controls.
+       * pointer-events-none keeps taps/clicks passing through
+       * to the video/controls underneath it.
+       */}
+
+      <div className="pointer-events-none absolute left-3 top-3 z-10 opacity-80">
+        <Logo size={22} iconOnly />
+      </div>
 
       {status === 'loading' && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/70">

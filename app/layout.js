@@ -1,5 +1,6 @@
 import './globals.css';
-import NavBar from '@/components/NavBar';
+import TopBar from '@/components/TopBar';
+import BottomNav from '@/components/BottomNav';
 import Splash from '@/components/Splash';
 
 export const metadata = {
@@ -29,8 +30,15 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="min-h-screen bg-nex-bg font-sans text-nex-text antialiased">
         <Splash />
-        <NavBar />
-        <main className="mx-auto max-w-7xl pb-16 pt-6">{children}</main>
+        <TopBar />
+        {/*
+          pb-20: the fixed BottomNav overlaps content unless the
+          page has enough bottom padding to clear it - 20 (5rem)
+          comfortably clears the ~56px bar plus safe-area on most
+          phones.
+        */}
+        <main className="mx-auto max-w-7xl pb-20 pt-6">{children}</main>
+        <BottomNav />
       </body>
     </html>
   );

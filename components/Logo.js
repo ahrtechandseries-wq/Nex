@@ -1,4 +1,4 @@
-export default function Logo({ size = 32, animated = false }) {
+export default function Logo({ size = 32, animated = false, iconOnly = false }) {
 
   return (
     <div
@@ -20,9 +20,11 @@ export default function Logo({ size = 32, animated = false }) {
         />
         <rect x="14" y="14" width="4" height="20" rx="1" fill="#F2F2F3" opacity="0.9" />
       </svg>
-      <span className="font-bold tracking-wide text-lg text-nex-text">
-        Nex<span className="text-nex-red">Live</span>
-      </span>
+      {!iconOnly && (
+        <span className="font-bold tracking-wide text-lg text-nex-text">
+          Nex<span className="text-nex-red">Live</span>
+        </span>
+      )}
     </div>
   );
 
